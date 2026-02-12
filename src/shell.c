@@ -78,9 +78,6 @@ void run_cmd(struct cmdline* cl){
 			Dup2(fd2, STDOUT_FILENO);
 			Close(fd2);
 		}
-		else{
-			exit(3);
-		}
 		if(execvp(cmd[0], cmd) == -1){
 			fprintf(stderr, "%s: Command not found.\n", cmd[0]);
 			exit(2);
