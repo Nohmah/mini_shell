@@ -8,11 +8,25 @@
 #include "readcmd.h"
 #include "csapp.h"
 
+
+void sigchld_handler(int sig) {
+    pid_t pid;
+    int status;
+    
+    // Boucle non blocante pour récolter les enfants terminés
+    while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0) {
+        // printf("[Process %d terminé]\n", pid);
+    }
+    return;
+}
+
 void run_cmd(struct cmdline *cl);
 void run_pipe2(struct cmdline *cl);
 void run_pipe(struct cmdline *cl);
 
 int main(){
+	// Définition d'un handler pour SIGCHLD
+	Signal(SIGCHLD, sigchld_handler);
 	while (1){
 		struct cmdline *l;
 		// int i;
@@ -36,6 +50,10 @@ int main(){
 		if (l->seq && l->seq[0] && l->seq[0][0] && (strcmp(l->seq[0][0], "quit") == 0)){
 			printf("exit\n");
 			exit(0);
+		}
+
+		if (l->bg) {
+			printf("[Background mode]\n");
 		}
 
 		if(l->seq[0] && l->seq[1] == NULL){
@@ -96,7 +114,11 @@ void run_cmd(struct cmdline *cl){
 		if (fd1 != -1) close(fd1);
 		if (fd2 != -1) close(fd2);
 
-		waitpid(pid, NULL, 0);
+		if (cl->bg) {
+			printf("[%d]\n", pid);
+		} else {
+			waitpid(pid, NULL, 0);
+		}
 	}
 }
 
@@ -220,7 +242,19 @@ void run_pipe(struct cmdline* cl){
 	if(fd_in != -1) Close(fd_in);
 	if(fd_out != -1) Close(fd_out);
 	
-	//Wait for all the child to finish.
-	for(int i = 0; i < n; i++) waitpid(pids[i], NULL, 0);
+	if (cl->bg) {
+		// Afficher tous les PIDs
+		printf("[");
+		for(int i = 0; i < n; i++) {
+			if(i > 0) printf(" ");
+			printf("%d", pids[i]);
+		}
+		printf("]\n");
+		// ne pas attendre les processus
+	} else {
+		// Wait for all children to finish
+		for(int i = 0; i < n; i++) waitpid(pids[i], NULL, 0);
+	}
+	
 	free(pids);
 }
