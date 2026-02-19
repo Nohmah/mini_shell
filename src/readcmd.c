@@ -95,6 +95,10 @@ static char **split_in_words(char *line)
 			w = "|";
 			cur++;
 			break;
+		case '&':
+			w = "&";
+			cur++;
+			break;
 		default:
 			/* Another word */
 			start = cur;
@@ -107,6 +111,7 @@ static char **split_in_words(char *line)
 				case '<':
 				case '>':
 				case '|':
+				case '&':
 					c = 0;
 					break;
 				default: ;
@@ -160,6 +165,7 @@ struct cmdline *readcmd(void)
 	char *w;
 	char **cmd;
 	char ***seq;
+	int bg = 0;
 	size_t cmd_len, seq_len;
 
 	line = readline();
@@ -179,6 +185,10 @@ struct cmdline *readcmd(void)
 	seq_len = 0;
 
 	words = split_in_words(line);
+	/*printf("DEBUG - Mots trouvés:\n");
+	for (i = 0; words[i] != 0; i++) {
+		printf("  words[%d] = [%s] (longueur: %ld)\n", i, words[i], strlen(words[i]));
+	}*/
 	free(line);
 
 	if (!s)
@@ -223,7 +233,6 @@ struct cmdline *readcmd(void)
 				s->err = "misplaced pipe";
 				goto error;
 			}
-
 			seq = xrealloc(seq, (seq_len + 2) * sizeof(char **));
 			seq[seq_len++] = cmd;
 			seq[seq_len] = 0;
@@ -232,12 +241,27 @@ struct cmdline *readcmd(void)
 			cmd[0] = 0;
 			cmd_len = 0;
 			break;
+		case '&':
+			if (words[i] != 0) {
+				s->err = "misplaced &";
+				goto error;
+			}
+			bg = 1;
+			break;
 		default:
 			cmd = xrealloc(cmd, (cmd_len + 2) * sizeof(char *));
 			cmd[cmd_len++] = w;
 			cmd[cmd_len] = 0;
 		}
 	}
+
+	    if (bg == 1 && cmd_len == 0 && seq_len == 0) {
+        s->err = "& without command";
+        free(cmd);
+        free(words);
+        freeseq(seq);
+        return s;
+    }
 
 	if (cmd_len != 0) {
 		seq = xrealloc(seq, (seq_len + 2) * sizeof(char **));
@@ -251,6 +275,7 @@ struct cmdline *readcmd(void)
 		free(cmd);
 	free(words);
 	s->seq = seq;
+	s->bg = bg;
 	return s;
 error:
 	while ((w = words[i++]) != 0) {
@@ -258,6 +283,7 @@ error:
 		case '<':
 		case '>':
 		case '|':
+		case '&':
 			break;
 		default:
 			free(w);
