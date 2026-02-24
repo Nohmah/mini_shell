@@ -1,5 +1,6 @@
 #
-# test01.txt - Tester la commande quit
+# test01.txt - Commande pour terminer le shell
 #
+echo Test de la commande quit
 quit
 WAIT
