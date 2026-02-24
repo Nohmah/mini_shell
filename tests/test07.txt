@@ -1,0 +1,16 @@
+#
+# test07.txt - Gestion des zombis
+#
+echo "Sleep lancé en arrière plan correctement récolté"
+sleep 5 &
+ps | grep sleep
+sleep 5
+ps | grep sleep
+
+echo "Trois sleep lancés en arrière-plan"
+sleep 10 &
+sleep 9 &
+sleep 8 &
+ps | grep sleep
+sleep 10
+ps | grep sleep
