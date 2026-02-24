@@ -1,0 +1,16 @@
+#
+# test06.txt - Exécution de commandes en arrière-plan
+#
+echo "Commande sleep avec & puis ps (Le shell ne devrait pas attendre)"
+sleep 3 &
+ps
+echo
+echo "& tout seul (Erreur de syntaxe attendue)"
+&
+echo
+echo "& devant la commande (Erreur de syntaxe attendue)"
+& ls -l
+echo
+echo "Pipe avec redirection"
+cat /etc/passwd | grep bash | wc -l > comptage.txt &
+cat comptage.txt
