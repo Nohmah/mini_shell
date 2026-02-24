@@ -1,4 +1,11 @@
 #
-# test02.txt - Exécuter une commande sans argument
+# test02.txt - Interprétation de commande simple
 #
+echo Test de la commande ls
+echo
 ls
+echo
+echo Test de la commande whoami
+echo
+echo je suis:
+whoami
