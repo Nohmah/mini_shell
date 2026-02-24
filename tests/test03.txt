@@ -1,6 +1,10 @@
 #
-# test03.txt - Exécuter une succession de commandes sans argument
-#
-ls
-echo
-ls
+# test03.txt - Commandes simples avec redirection d'entrée/sortie
+# Attention: avec le ./sdriver.pl, le test ne marche pas: 'sortie.txt'$'\r' est créé à la place de sortie.txt
+echo Test de la redirection
+echo Hello World > sortie.txt
+cat < sortie.txt
+echo Test de redirection entrée et sortie combiné
+echo Hello again > sortie.txt
+cat < sortie.txt > copie.txt
+cat < copie.txt
