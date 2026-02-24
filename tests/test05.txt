@@ -1,9 +1,11 @@
 #
-# test05.txt - test de plusieurs commande avec argument
+# test05.txt - Séquence de commandes composée de plusieurs commandes et de un ou plusieurs tubes
 #
+echo "2 commandes : Compte le nombre de fichiers dans le répertoire courant"
+ls -la | wc -l
+echo
 echo '3 commandes : Met en majuscule et inverse la string "Hello World"'
-echo
 echo "hello world" | tr 'a-z' 'A-Z' | rev
-echo "5 commandes : Récupère, extrait, trie les 10 premiers utilsateurs du systeme"
 echo
+echo "5 commandes : Récupère, extrait, trie les 10 premiers utilsateurs du systeme"
 cat /etc/passwd | cut -d: -f1 | sort | uniq | head -10 | wc -l
