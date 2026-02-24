@@ -16,5 +16,5 @@ echo "Fichier inexistant en entrée"
 cat < fichier_qui_n_existe_pas.txt
 echo
 echo "Redirection vers un répertoire"
-mkdir répertoire
-echo "hello" > test_dir
+mkdir repertoire
+echo "hello" > repertoire
