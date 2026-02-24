@@ -185,9 +185,9 @@ struct cmdline *readcmd(void)
 	seq_len = 0;
 
 	words = split_in_words(line);
-	/*printf("DEBUG - Mots trouvés:\n");
+	/*printf("(DEBUG) Mots trouvés:\n");
 	for (i = 0; words[i] != 0; i++) {
-		printf("  words[%d] = [%s] (longueur: %ld)\n", i, words[i], strlen(words[i]));
+		printf("words[%d] = [%s]\n", i, words[i]);
 	}*/
 	free(line);
 
@@ -242,6 +242,10 @@ struct cmdline *readcmd(void)
 			cmd_len = 0;
 			break;
 		case '&':
+			if (cmd_len == 0 && seq_len == 0) {
+				s->err = "& without command";
+				goto error;
+			}
 			if (words[i] != 0) {
 				s->err = "misplaced &";
 				goto error;
